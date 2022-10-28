@@ -8,16 +8,35 @@ const data = require('./data');
 const MONGODB_URI = 'mongodb://localhost:27017/recipe-app';
 
 // Connection to the database "recipe-app"
-mongoose
-  .connect(MONGODB_URI)
-  .then(x => {
+
+const recipe = async function() {
+  try{
+    const x = await mongoose.connect(MONGODB_URI)
     console.log(`Connected to the database: "${x.connection.name}"`);
-    // Before adding any recipes to the database, let's remove all existing ones
-    return Recipe.deleteMany()
-  })
-  .then(() => {
+    
+    const del = await Recipe.deleteMany()// Before adding any recipes to the database, let's remove all existing ones
+    // const crema = await Recipe.create({ title: "Crema catalana", cuisine: "Catalana" })
+    
+    const many = await Recipe.insertMany(data)
+    many.forEach (recipe => {
+      console.log(recipe.title)
+    })  
+
+
+    const updated = await Recipe.findOneAndUpdate({duration:220} , {duration: 100})
+    const deleted = await Recipe.deleteOne({ title: "Carrot Cake"})
+    
+    mongoose.connection.close()
+  
     // Run your code here, after you have insured that the connection was made
-  })
-  .catch(error => {
-    console.error('Error connecting to the database', error);
-  });
+
+  } catch (err){
+      console.log('Error connecting to the database', err)
+  }
+}
+recipe()
+
+
+
+
+
